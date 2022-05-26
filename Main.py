@@ -5,8 +5,11 @@ from User import User
 from random import randrange, uniform
 from numpy import *
 import matplotlib.pyplot as plt
+import logging
 
 def main():
+    FORMAT = '%(asctime)s %(levelname)s: %(message)s'
+    logging.basicConfig(level=logging.DEBUG, filename='myLog.log', filemode='w', format=FORMAT)
     # g4 = HistoryData()
     # g5 = {1: 'apple', 2: 'banana00'}
     # g4.addUsersDemand(g5)
@@ -15,7 +18,7 @@ def main():
     # --------------- #
     #     Initial     #
     # --------------- #
-    m, n, k = 1, 2, 2 # Cloud, Broker, User
+    m, n, k = 1, 1, 2 # Cloud, Broker, User
     cloud, broker, users = [], [], []
     for idx in range(m):
         cloud.append( CloudProvider(idx) )
@@ -31,6 +34,7 @@ def main():
     y2 = []
     for b_round in range(10):
         print("--------------------round: ", b_round, "------------------")
+        logging.info(f'--------------------round: {b_round}------------------')
 
         # Broker aggregate all users' demand
         for idx in range(n):
@@ -49,26 +53,31 @@ def main():
         # Compare users' demand and cloud supply
         for idx in range(n):
             if broker[idx].curUsersDemand <= broker[idx].curCloudInstanceNum:
+                print("profit-objective mode")
+                logging.info('profit-objective mode')
                 #######################################################################################
                 #                                 profit-objective mode                               #
                 #######################################################################################
                 print("broker", idx)
                 for user in users:
-                    print("user sen:", user.priceSensitivity)
+                    # print("user sen:", user.priceSensitivity)
+                    logging.info(f'user sensitivity: {user.priceSensitivity}')
                     maxProfit, optimalPrice, actualPurchase = broker[idx].calMaxProfit(broker[idx].curUsersDemand, 
                                                                                        user.priceSensitivity,
                                                                                        broker[idx].curCloudPrice
                                                                                       )
-                    print("maxProfit:", maxProfit, "optimalPrice:", optimalPrice, "actualPurchase", actualPurchase)
+                    logging.info(f'maximum profit: {maxProfit}, optimal price: {optimalPrice}, actualPurchase: {actualPurchase}')
+                    # print("maxProfit:", maxProfit, "optimalPrice:", optimalPrice, "actualPurchase", actualPurchase)
             else:
-                print("fairness-objective mode")
-
-
+                # print("fairness-objective mode")
+                logging.info('fairness-objective mode')
         
     plt.plot(y, marker = 'o')
     plt.plot(y2, marker = 'o')
     plt.legend(['User demand', 'Cloud supply'])
     plt.show()
+    
+    logging.info('simulation done...')
 
 if __name__ == '__main__':
     main()

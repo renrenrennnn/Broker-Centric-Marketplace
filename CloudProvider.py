@@ -8,6 +8,7 @@ class CloudProvider(object):
         self._type2Price = 0
         self._highPrice = 0
         self._instanceNum = 0
+        self._D_bc = 0
 
     @property
     def ID(self):
@@ -23,6 +24,13 @@ class CloudProvider(object):
     def type2Price(self, newPrice):
         self._type2Price = newPrice
 
+    @property
+    def D_bc(self):
+        return self._D_bc
+    @D_bc.setter
+    def D_bc(self, newD_bc):
+        self._D_bc = newD_bc
+        
     @property
     def instanceNum(self):
         return self._instanceNum

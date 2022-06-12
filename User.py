@@ -1,9 +1,11 @@
 from random import randrange, uniform
+import numpy as np
 
 class User(object):
     def __init__(self, ID):
         self._ID = ID
-        self._demand = randrange(10, 90)
+        # self._demand = np.random.default_rng().poisson(80, 1)
+        self._demand = []
         self._priceSensitivity = randrange(1, 4)
 
     @property
@@ -20,8 +22,7 @@ class User(object):
     @property
     def priceSensitivity(self):
         return self._priceSensitivity
-    # @demand.setter
-    # def demand(self, newDemand):
-    #     self._demand = newDemand
-
-    # def genDemand(-
+    
+    def genDemand(self, brokerSize):
+        self._demand = np.random.default_rng().poisson(80, brokerSize)
+        print('user demand:', self._demand)

@@ -15,6 +15,7 @@ class Broker(object):
         self._medPrice = 0
         self._highPrice = 0
         self._remainInstance = 0
+        self.businessStrategyIndex = 1
 
     @property
     def ID(self):
@@ -35,11 +36,12 @@ class Broker(object):
     def curCloudPrice(self):
         return self._curCloudPrice
 
-    def aggregateDemand(self, brokerSize, usersSize):
+    def aggregateDemand(self, users):
         # np.random.seed(0)
-        demandLambda = numpy.random.default_rng().poisson(80, usersSize)
-        print("lambda: ", demandLambda)
-        self._curUsersDemand = sum(demandLambda)
+        totalUsersDemand = 0
+        for idx in range(len(users)):
+            totalUsersDemand = totalUsersDemand + users[idx].demand[self._ID] 
+        self._curUsersDemand = totalUsersDemand
 
     def getCloudSupply(self, brokerSize, cloud):
         self._curCloudInstanceNum = cloud.genSupply()

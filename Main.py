@@ -18,7 +18,7 @@ def main():
     # --------------- #
     #     Initial     #
     # --------------- #
-    m, n, k = 1, 1, 2 # Cloud, Broker, User
+    m, n, k = 2, 2, 2 # Cloud, Broker, User
     cloud, broker, users = [], [], []
     for idx in range(m):
         cloud.append( CloudProvider(idx) )
@@ -33,16 +33,21 @@ def main():
     y = []
     y2 = []
     for b_round in range(1):
-        print("-------------------- round: ", b_round, "------------------")
-        logging.info(f'--------------------round: {b_round}------------------')
+        print("------------------- round: ", b_round, "------------------")
+        logging.info(f'-------------------round: {b_round}------------------')
 
-        # Broker aggregate all users' demand
+        # User generage demand(done)
+        for idx in range(k):
+            users[idx].genDemand(n)
+
+        # Broker aggregate all users' demand(done)
         logging.info(f'Broker aggregate all users demand')
         for idx in range(n):
-            broker[idx].aggregateDemand(n, k)
+            broker[idx].aggregateDemand(users)
             print("broker", idx, "aggregate user demand sum:", broker[idx].curUsersDemand)
             y.append(broker[idx].curUsersDemand)
 
+        # Broker decide D_bc
         # Cloud reply instance supply and price
         logging.info(f'Cloud reply instance supply and price')
         for idx in range(n):

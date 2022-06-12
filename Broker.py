@@ -1,7 +1,7 @@
 import numpy
 from HistoryData import HistoryData
 from User import User
-from numpy import *
+import numpy as np
 
 class Broker(object):
     def __init__(self, ID):
@@ -36,6 +36,7 @@ class Broker(object):
         return self._curCloudPrice
 
     def aggregateDemand(self, brokerSize, usersSize):
+        # np.random.seed(0)
         demandLambda = numpy.random.default_rng().poisson(80, usersSize)
         print("lambda: ", demandLambda)
         self._curUsersDemand = sum(demandLambda)

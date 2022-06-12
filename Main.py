@@ -32,17 +32,19 @@ def main():
     # ------------------------- #
     y = []
     y2 = []
-    for b_round in range(10):
-        print("--------------------round: ", b_round, "------------------")
+    for b_round in range(1):
+        print("-------------------- round: ", b_round, "------------------")
         logging.info(f'--------------------round: {b_round}------------------')
 
         # Broker aggregate all users' demand
+        logging.info(f'Broker aggregate all users demand')
         for idx in range(n):
             broker[idx].aggregateDemand(n, k)
             print("broker", idx, "aggregate user demand sum:", broker[idx].curUsersDemand)
             y.append(broker[idx].curUsersDemand)
 
         # Cloud reply instance supply and price
+        logging.info(f'Cloud reply instance supply and price')
         for idx in range(n):
             cloud[0].type2Price = round(random.uniform(0.4, 0.6), 2)
             broker[idx].getCloudSupply(n, cloud[0])
@@ -55,9 +57,9 @@ def main():
             if broker[idx].curUsersDemand <= broker[idx].curCloudInstanceNum:
                 print("profit-objective mode")
                 logging.info('profit-objective mode')
-                #######################################################################################
-                #                                 profit-objective mode                               #
-                #######################################################################################
+                #################################################################
+                #                    profit-objective mode                      #
+                #################################################################
                 print("broker", idx)
                 for user in users:
                     # print("user sen:", user.priceSensitivity)

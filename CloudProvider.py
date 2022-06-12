@@ -35,7 +35,7 @@ class CloudProvider(object):
     def announcePrice(self, supply):
         price = self._type2Price
         if supply < 140:
-            price = self._type2Price * 1.6
+            price = round(self._type2Price * random.uniform(1.0, 1.6), 2)
         elif supply > 180:
-            price = self._type2Price * 0.4
+            price = round(self._type2Price * random.uniform(0.4, 1.0), 2)
         return price

@@ -5,10 +5,11 @@ import numpy as np
 import statistics
 
 class Broker(object):
-    def __init__(self, ID, businessStrategyIndex):
+    def __init__(self, ID, cloudSize, businessStrategyIndex):
         self._ID = ID
+        self._cloudSize = cloudSize
         self._historyData = HistoryData(2, 2, 2, 2)
-        self._curCloudPrice = 0
+        self._curCloudPrice = [1] * cloudSize
         self._curCloudInstanceNum = 0
         self._curUsersDemand = 0
         self._cost = 0
@@ -18,6 +19,7 @@ class Broker(object):
         self._remainInstance = 0
         self._businessStrategyIndex = 1
         self._alpha = round(np.random.uniform(1.2, 1.5), 1)
+        self._D_cb = [1] * cloudSize
 
     @property
     def ID(self):
@@ -25,6 +27,10 @@ class Broker(object):
     @ID.setter
     def ID(self, newID):
         self._ID = newID
+
+    @property
+    def D_cb(self):
+        return self._D_cb
 
     @property
     def curUsersDemand(self):
@@ -53,11 +59,14 @@ class Broker(object):
         return D_bc
     
 
-    def getCloudSupply(self, brokerSize, cloud):
-        self._curCloudInstanceNum = cloud.genSupply()
+    def getCloudSupply(self, clouds):
+        # self._curCloudInstanceNum = clouds.genSupply()
+        for cloud in clouds:
+            self._D_cb[cloud.ID] = cloud.cal_D_cb(10, self._ID)
     
-    def getCloudPrice(self, cloud):
-        self._curCloudPrice = cloud.announcePrice(self._curCloudInstanceNum)
+    def getCloudPrice(self, clouds):
+        for cloud in clouds:
+            self._curCloudPrice[cloud.ID] = cloud.announcePrice()
         print("broker", self._ID, "get price", self._curCloudPrice)
 
     def calMaxProfit(self, baseDemand, priceSensitivity, cost):

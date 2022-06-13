@@ -19,11 +19,11 @@ def main():
     #     Initial     #
     # --------------- #
     m, n, k = 2, 2, 2 # Cloud, Broker, User
-    cloud, broker, users = [], [], []
+    clouds, brokers, users = [], [], []
     for idx in range(m):
-        cloud.append( CloudProvider(idx) )
+        clouds.append( CloudProvider(idx, n) )
     for idx in range(n):
-        broker.append( Broker(idx, 1) )
+        brokers.append( Broker(idx, m, 1) )
     for idx in range(k):
         users.append( User(idx) )
 
@@ -43,27 +43,34 @@ def main():
         # Broker aggregate all users' demand(step 1 -> done)
         logging.info(f'Broker aggregate all users demand')
         for idx in range(n):
-            broker[idx].aggregateDemand(users)
-            print("broker", idx, "aggregate user demand sum:", broker[idx].curUsersDemand)
-            y.append(broker[idx].curUsersDemand)
+            brokers[idx].aggregateDemand(users)
+            print("broker", idx, "aggregate user demand sum:", brokers[idx].curUsersDemand)
+            y.append(brokers[idx].curUsersDemand)
 
         # Broker decide D_bc (step 2 -> done)
         for brokerIdx in range(n):
             for cloudIdx in range(m):
-                cloud[cloudIdx].D_bc = broker[brokerIdx].cal_D_bc(cloudIdx)
+                clouds[cloudIdx].D_bc[brokerIdx] = brokers[brokerIdx].cal_D_bc(cloudIdx)
 
-        # Cloud reply instance supply and price
+        # Cloud reply instance supply and price (step 3 -> done)
         logging.info(f'Cloud reply instance supply and price')
-        for idx in range(n):
-            cloud[0].type2Price = round(random.uniform(0.4, 0.6), 2)
-            broker[idx].getCloudSupply(n, cloud[0])
-            broker[idx].getCloudPrice(cloud[0])
-            print("Broker", idx, "get from Cloud ", broker[idx].curCloudInstanceNum, "Instances")
-            y2.append(broker[idx].curCloudInstanceNum)
+        # for idx in range(n):
+        #     cloud[0].type2Price = round(random.uniform(0.4, 0.6), 2)
+        #     broker[idx].getCloudSupply(n, cloud[0])
+        #     broker[idx].getCloudPrice(cloud[0])
+        #     print("Broker", idx, "get from Cloud ", broker[idx].curCloudInstanceNum, "Instances")
+        #     y2.append(broker[idx].curCloudInstanceNum)
+        for cloud in clouds:
+            cloud.type2Price = round(random.uniform(0.4, 0.6), 2)
+            cloud.availableInstanceNum = cloud.genSupply()
+            print('cloud',cloud.ID, 'available instance number:', cloud.availableInstanceNum)
+        for broker in brokers:
+            broker.getCloudSupply(clouds)
+            broker.getCloudPrice(clouds)
 
         # Compare users' demand and cloud supply
         for idx in range(n):
-            if broker[idx].curUsersDemand <= broker[idx].curCloudInstanceNum:
+            if brokers[idx].curUsersDemand <= brokers[idx].curCloudInstanceNum:
                 print("profit-objective mode")
                 logging.info('profit-objective mode')
                 #################################################################
@@ -73,9 +80,9 @@ def main():
                 for user in users:
                     # print("user sen:", user.priceSensitivity)
                     logging.info(f'user sensitivity: {user.priceSensitivity}')
-                    maxProfit, optimalPrice, actualPurchase = broker[idx].calMaxProfit(broker[idx].curUsersDemand, 
+                    maxProfit, optimalPrice, actualPurchase = brokers[idx].calMaxProfit(brokers[idx].curUsersDemand, 
                                                                                        user.priceSensitivity,
-                                                                                       broker[idx].curCloudPrice
+                                                                                       brokers[idx].curCloudPrice
                                                                                       )
                     logging.info(f'maximum profit: {maxProfit}, optimal price: {optimalPrice}, actualPurchase: {actualPurchase}')
                     # print("maxProfit:", maxProfit, "optimalPrice:", optimalPrice, "actualPurchase", actualPurchase)

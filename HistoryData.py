@@ -50,7 +50,7 @@ class HistoryData():
         self._wholesalePriceFromCloud.append(newWholeSalePrice)
 
     @property
-    def othersinstanceNum(self):
+    def othersInstanceNum(self):
         return self._othersInstanceNum
     def addOthersInstanceNum(self, newOthersInstanceNum):
         self._othersInstanceNum.append(newOthersInstanceNum)

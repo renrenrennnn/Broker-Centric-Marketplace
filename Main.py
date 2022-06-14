@@ -6,6 +6,7 @@ from random import randrange, uniform
 from numpy import *
 import matplotlib.pyplot as plt
 import logging
+import math
 
 def main():
     FORMAT = '%(asctime)s %(levelname)s: %(message)s'
@@ -37,29 +38,23 @@ def main():
         logging.info(f'-------------------round: {b_round}------------------')
 
         # User generage demand(step 1 -> done)
-        for idx in range(k):
-            users[idx].genDemand(n)
+        for user in users:
+            user.genDemand(n)
 
         # Broker aggregate all users' demand(step 1 -> done)
         logging.info(f'Broker aggregate all users demand')
-        for idx in range(n):
-            brokers[idx].aggregateDemand(users)
-            print("broker", idx, "aggregate user demand sum:", brokers[idx].curUsersDemand)
-            y.append(brokers[idx].curUsersDemand)
+        for broker in brokers:
+            broker.aggregateDemand(users)
+            print("broker", broker.ID, "aggregate user demand sum:", broker.curUsersDemand)
+            y.append(broker.curUsersDemand)
 
         # Broker decide D_bc (step 2 -> done)
-        for brokerIdx in range(n):
-            for cloudIdx in range(m):
-                clouds[cloudIdx].D_bc[brokerIdx] = brokers[brokerIdx].cal_D_bc(cloudIdx)
+        for broker in brokers:
+            for cloud in clouds:
+                cloud.D_bc[broker.ID] = broker.cal_D_bc(cloud.ID)
 
         # Cloud reply instance supply and price (step 3 -> done)
         logging.info(f'Cloud reply instance supply and price')
-        # for idx in range(n):
-        #     cloud[0].type2Price = round(random.uniform(0.4, 0.6), 2)
-        #     broker[idx].getCloudSupply(n, cloud[0])
-        #     broker[idx].getCloudPrice(cloud[0])
-        #     print("Broker", idx, "get from Cloud ", broker[idx].curCloudInstanceNum, "Instances")
-        #     y2.append(broker[idx].curCloudInstanceNum)
         for cloud in clouds:
             cloud.type2Price = round(random.uniform(0.4, 0.6), 2)
             cloud.availableInstanceNum = cloud.genSupply()
@@ -69,25 +64,44 @@ def main():
             broker.getCloudPrice(clouds)
 
         # Compare users' demand and cloud supply
-        for idx in range(n):
-            if brokers[idx].curUsersDemand <= brokers[idx].curCloudInstanceNum:
+        for broker in brokers:
+            if broker.curUsersDemand <= sum(broker.D_cb):
                 print("profit-objective mode")
                 logging.info('profit-objective mode')
                 #################################################################
                 #                    profit-objective mode                      #
                 #################################################################
-                print("broker", idx)
+                # avgDemand = math.ceil(broker.curUsersDemand / m)
+                # print("aveDemand: ", avgDemand)
+                listOfCloudPrice = broker.curCloudPrice
+                dictOfCloudPrice = {i : listOfCloudPrice[i] for i in range(0, len(listOfCloudPrice))}
+                sortedCloudPrice = {k: v for k, v in sorted(dictOfCloudPrice.items(), key = lambda item: item[1])} # dict
+                dictOf_D_cb = {i : broker.D_cb[i] for i in range(0, len(broker.D_cb))}
+                # print("sorted cloud price:", sortedCloudPrice)
                 for user in users:
-                    # print("user sen:", user.priceSensitivity)
+                    print("user", user.ID, "sensitivity:", user.priceSensitivity)
                     logging.info(f'user sensitivity: {user.priceSensitivity}')
-                    maxProfit, optimalPrice, actualPurchase = brokers[idx].calMaxProfit(brokers[idx].curUsersDemand, 
+                    
+                    # maxProfit, optimalPrice, actualPurchase = broker.calMaxProfit(broker.curUsersDemand, 
+                    #                                                                    user.priceSensitivity,
+                    #                                                                    min(broker.curCloudPrice)
+                    #                                                                 )
+                    keyListOfSortedCloudPrice = []
+                    for k in sortedCloudPrice:
+                        keyListOfSortedCloudPrice.append(k)
+                    curIdx = 0
+                    if user.demand[broker.ID] > dictOf_D_cb[keyListOfSortedCloudPrice[curIdx]]:
+                        curIdx = curIdx + 1
+                    maxProfit, optimalPrice, actualPurchase = broker.calMaxProfit(     user.demand[broker.ID], 
                                                                                        user.priceSensitivity,
-                                                                                       brokers[idx].curCloudPrice
-                                                                                      )
+                                                                                       broker.curCloudPrice[keyListOfSortedCloudPrice[curIdx]]
+                                                                                 )
+                    dictOf_D_cb[keyListOfSortedCloudPrice[curIdx]] = dictOf_D_cb[keyListOfSortedCloudPrice[curIdx]] - actualPurchase
                     logging.info(f'maximum profit: {maxProfit}, optimal price: {optimalPrice}, actualPurchase: {actualPurchase}')
-                    # print("maxProfit:", maxProfit, "optimalPrice:", optimalPrice, "actualPurchase", actualPurchase)
+                    print("maxProfit:", maxProfit, "optimalPrice:", optimalPrice, "actualPurchase", actualPurchase, "from cloud", keyListOfSortedCloudPrice[curIdx])
+
             else:
-                # print("fairness-objective mode")
+                print("fairness-objective mode")
                 logging.info('fairness-objective mode')
         
     plt.plot(y, marker = 'o')

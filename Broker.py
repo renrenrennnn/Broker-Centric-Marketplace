@@ -31,6 +31,9 @@ class Broker(object):
     @property
     def D_cb(self):
         return self._D_cb
+    @D_cb.setter
+    def D_cb(self, new_D_cb):
+        self._D_cb = new_D_cb
 
     @property
     def curUsersDemand(self):
@@ -53,7 +56,7 @@ class Broker(object):
 
     def cal_D_bc(self, cloudId):
         alpha = self._alpha * self._businessStrategyIndex
-        InstanceListInHistoryData = self._historyData.othersinstanceNum[cloudId]
+        InstanceListInHistoryData = self._historyData.othersInstanceNum[cloudId]
         D_bc = int(alpha * self._curUsersDemand * (InstanceListInHistoryData[self._ID] / sum(InstanceListInHistoryData)))
         print('broker', self._ID, 'cloud', cloudId, 'D_bc = ', D_bc)
         return D_bc
@@ -63,6 +66,7 @@ class Broker(object):
         # self._curCloudInstanceNum = clouds.genSupply()
         for cloud in clouds:
             self._D_cb[cloud.ID] = cloud.cal_D_cb(10, self._ID)
+        # print("broker", self._ID, "D_cb: ", self._D_cb)
     
     def getCloudPrice(self, clouds):
         for cloud in clouds:

@@ -72,6 +72,7 @@ class CloudProvider(object):
     def cal_D_cb(self, basic, brokerId):
         D_cb = basic + (self._availableInstanceNum - self._brokerSize * basic) * self._brokersCredit[brokerId] * (self._D_bc[brokerId] / sum(self._D_bc))
         print('Cloud', self._ID, 'give broker', brokerId, 'D_cb:', int(D_cb))
+        self._D_cb[brokerId] = int(D_cb)
         return int(D_cb)
 
     def updateBrokersCredit(self):

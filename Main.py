@@ -62,6 +62,8 @@ def main():
         for broker in brokers:
             broker.getCloudSupply(clouds)
             broker.getCloudPrice(clouds)
+            # update broker's history data: other brokers' instance
+            broker.updateHistoryData_othersInstanceNum(clouds, broker)
 
         # Compare users' demand and cloud supply
         for broker in brokers:

@@ -63,10 +63,8 @@ class Broker(object):
     
 
     def getCloudSupply(self, clouds):
-        # self._curCloudInstanceNum = clouds.genSupply()
         for cloud in clouds:
             self._D_cb[cloud.ID] = cloud.cal_D_cb(10, self._ID)
-        # print("broker", self._ID, "D_cb: ", self._D_cb)
     
     def getCloudPrice(self, clouds):
         for cloud in clouds:
@@ -84,5 +82,6 @@ class Broker(object):
         actualPurchase = baseDemand - priceSensitivity * optimalPrice
         return maxProfit, optimalPrice, actualPurchase
 
-    def updateHistoryData(self):
-        pass
+    def updateHistoryData_othersInstanceNum(self, clouds, otherBroker):
+        for cloud in clouds:
+            self._historyData.othersInstanceNum[cloud.ID][otherBroker.ID] = self._historyData.othersInstanceNum[cloud.ID][otherBroker.ID] + sum(cloud.D_cb)

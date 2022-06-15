@@ -33,6 +33,7 @@ def main():
     # ------------------------- #
     y = []
     y2 = []
+    y3 = []
     for b_round in range(500):
         print("------------------- round: ", b_round, "------------------")
         logging.info(f'-------------------round: {b_round}------------------')
@@ -104,20 +105,32 @@ def main():
                     print("user", user.ID, "satis to broker", broker.ID, demandSatisfaction, priceSatisfaction)
                     user.update_D(broker.ID)
                     user.update_D_success(actualPurchase, broker.ID)
+
             else:
                 print("fairness-objective mode")
                 logging.info('fairness-objective mode')
 
-            # update brokers' credit scored by cloud
-            for cloud in clouds:
-                cloud.updateBrokersCreditData(brokers)
-                cloud.calBrokersCredit()
-                print(cloud.brokersCredit)
-            y.append(clouds[0].brokersCredit[0])
+
+        # update brokers' credit scored by cloud
+        for cloud in clouds:
+            cloud.updateBrokersCreditData(brokers)
+            cloud.calBrokersCredit()
+            print(cloud.brokersCredit)
         
+        y.append(clouds[0].brokersCredit[0])
+        y2.append(demandSatisfaction)
+        y3.append(priceSatisfaction)
+    
+    plt.subplot(3, 1, 1)
     plt.plot(y)
-    plt.plot(y2, marker = 'o')
-    plt.legend(['User demand', 'Cloud supply'])
+    plt.title("brokers' credit scored by cloud")
+    plt.subplot(3, 1, 2)
+    plt.plot(y2)
+    plt.title("user demand satisfaction")
+    plt.subplot(3, 1, 3)
+    plt.plot(y3)
+    plt.title("user price satisfaction")
+    # plt.legend(['User demand satisfaction', 'user price satisfaction'])
     plt.show()
     
     logging.info('simulation done...')

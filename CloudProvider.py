@@ -53,7 +53,7 @@ class CloudProvider(object):
         self._availableInstanceNum = newAvailableInstanceNum
 
     def genSupply(self):
-        supply = numpy.random.default_rng().poisson(160)
+        supply = numpy.random.default_rng().poisson(250)
         # print("lambda(cloud genSupply): ", supply)
         return supply
 
@@ -76,6 +76,8 @@ class CloudProvider(object):
     def cal_D_cb(self, basic, brokerId):
         D_cb = basic + (self._availableInstanceNum - self._brokerSize * basic) * self._brokersCredit[brokerId] * (self._D_bc[brokerId] / sum(self._D_bc))
         print('Cloud', self._ID, 'give broker', brokerId, 'D_cb:', int(D_cb))
+        if int(D_cb) > self._D_bc[brokerId]:
+            D_cb = self._D_bc[brokerId]
         self._D_cb[brokerId] = int(D_cb)
         return int(D_cb)
 

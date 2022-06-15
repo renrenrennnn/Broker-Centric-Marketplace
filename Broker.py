@@ -18,7 +18,7 @@ class Broker(object):
         self._highPrice = 0
         self._remainInstance = 0
         self._businessStrategyIndex = 1
-        self._alpha = round(np.random.uniform(1.2, 1.5), 1)
+        self._alpha = 1.2
         self._D_cb = [1] * cloudSize
 
     @property
@@ -63,8 +63,9 @@ class Broker(object):
     
 
     def getCloudSupply(self, clouds):
+        basic = 50
         for cloud in clouds:
-            self._D_cb[cloud.ID] = cloud.cal_D_cb(10, self._ID)
+            self._D_cb[cloud.ID] = cloud.cal_D_cb(basic, self._ID)
     
     def getCloudPrice(self, clouds):
         for cloud in clouds:

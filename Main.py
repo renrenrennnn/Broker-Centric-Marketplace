@@ -26,7 +26,7 @@ def main():
     for idx in range(n):
         brokers.append( Broker(idx, m, 1) )
     for idx in range(k):
-        users.append( User(idx) )
+        users.append( User(idx, n) )
 
     # ------------------------- #
     #     B-round(n) starts     #
@@ -79,9 +79,6 @@ def main():
                 dictOf_D_cb = {i : broker.D_cb[i] for i in range(0, len(broker.D_cb))}
                 # print("sorted cloud price:", sortedCloudPrice)
                 for user in users:
-                    print("user", user.ID, "sensitivity:", user.priceSensitivity)
-                    logging.info(f'user sensitivity: {user.priceSensitivity}')
-                    
                     # maxProfit, optimalPrice, actualPurchase = broker.calMaxProfit(broker.curUsersDemand, 
                     #                                                                    user.priceSensitivity,
                     #                                                                    min(broker.curCloudPrice)
@@ -99,7 +96,11 @@ def main():
                     dictOf_D_cb[keyListOfSortedCloudPrice[curIdx]] = dictOf_D_cb[keyListOfSortedCloudPrice[curIdx]] - actualPurchase
                     logging.info(f'maximum profit: {maxProfit}, optimal price: {optimalPrice}, actualPurchase: {actualPurchase}')
                     print("maxProfit:", maxProfit, "optimalPrice:", optimalPrice, "actualPurchase", actualPurchase, "from cloud", keyListOfSortedCloudPrice[curIdx])
-
+                    demandSatisfaction = user.calDemandSatisfaction(0.5, broker.ID, actualPurchase)
+                    priceSatisfaction = user.calPriceSatisfaction(broker.ID, actualPurchase, optimalPrice, b_round + 2)
+                    print("user", user.ID, "satis to broker", broker.ID, demandSatisfaction, priceSatisfaction)
+                    user.update_D(broker.ID)
+                    user.update_D_success(actualPurchase, broker.ID)
             else:
                 print("fairness-objective mode")
                 logging.info('fairness-objective mode')

@@ -33,7 +33,7 @@ def main():
     # ------------------------- #
     y = []
     y2 = []
-    for b_round in range(2):
+    for b_round in range(500):
         print("------------------- round: ", b_round, "------------------")
         logging.info(f'-------------------round: {b_round}------------------')
 
@@ -46,12 +46,13 @@ def main():
         for broker in brokers:
             broker.aggregateDemand(users)
             print("broker", broker.ID, "aggregate user demand sum:", broker.curUsersDemand)
-            y.append(broker.curUsersDemand)
+            # y.append(broker.curUsersDemand)
 
         # Broker decide D_bc (step 2 -> done)
         for broker in brokers:
             for cloud in clouds:
                 cloud.D_bc[broker.ID] = broker.cal_D_bc(cloud.ID)
+                # cloud.D_bc_history[broker.ID].append(cloud.D_bc[broker.ID])
 
         # Cloud reply instance supply and price (step 3 -> done)
         logging.info(f'Cloud reply instance supply and price')
@@ -106,8 +107,15 @@ def main():
             else:
                 print("fairness-objective mode")
                 logging.info('fairness-objective mode')
+
+            # update brokers' credit scored by cloud
+            for cloud in clouds:
+                cloud.updateBrokersCreditData(brokers)
+                cloud.calBrokersCredit()
+                print(cloud.brokersCredit)
+            y.append(clouds[0].brokersCredit[0])
         
-    plt.plot(y, marker = 'o')
+    plt.plot(y)
     plt.plot(y2, marker = 'o')
     plt.legend(['User demand', 'Cloud supply'])
     plt.show()

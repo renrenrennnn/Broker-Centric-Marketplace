@@ -1,5 +1,6 @@
 import random
 import numpy
+import math
 
 class CloudProvider(object):
     def __init__(self, ID, brokerSize):
@@ -67,6 +68,9 @@ class CloudProvider(object):
     def calBrokersCredit(self):
         sum_B_in = [sum(row) for row in zip(*self._B_in_history)]
         sum_D_bc = [sum(row) for row in zip(*self._D_bc_history)]
+        # sum_B_in = [numpy.mean(row) for row in zip(*self._B_in_history)]
+        # sum_D_bc = [numpy.mean(row) for row in zip(*self._D_bc_history)]
+        print("sum of B_in", sum_B_in, "sum of D_bc", sum_D_bc)
         self._brokersCredit = [i / j for i, j in zip(sum_B_in, sum_D_bc)]
 
     def cal_D_cb(self, basic, brokerId):
@@ -75,5 +79,16 @@ class CloudProvider(object):
         self._D_cb[brokerId] = int(D_cb)
         return int(D_cb)
 
-    def updateBrokersCredit(self):
-        pass
+    def updateBrokersCreditData(self, brokers):
+        x = 20
+        cur_D_bc = []
+        cur_B_in = []
+        for broker in brokers:
+            cur_D_bc.append(self._D_bc[broker.ID])
+            cur_B_in.append(self.D_cb[broker.ID])
+        self._D_bc_history.insert(0, cur_D_bc)
+        self._B_in_history.insert(0, cur_B_in)
+        if len(self._D_bc_history) > x:
+            self._D_bc_history.pop()
+        if len(self._B_in_history) > x:
+            self._B_in_history.pop()

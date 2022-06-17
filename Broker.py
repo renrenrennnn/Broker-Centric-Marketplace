@@ -18,7 +18,7 @@ class Broker(object):
         self._highPrice = 0
         self._remainInstance = 0
         self._businessStrategyIndex = 1
-        self._alpha = 1.2
+        self._alpha = 1
         self._D_cb = [1] * cloudSize
 
     @property
@@ -34,6 +34,13 @@ class Broker(object):
     @D_cb.setter
     def D_cb(self, new_D_cb):
         self._D_cb = new_D_cb
+
+    @property
+    def businessStrategyIndex(self):
+        return self._businessStrategyIndex
+    @businessStrategyIndex.setter
+    def businessStrategyIndex(self, newBSI):
+        self._businessStrategyIndex = newBSI
 
     @property
     def curUsersDemand(self):

@@ -11,14 +11,11 @@ import math
 def main():
     FORMAT = '%(asctime)s %(levelname)s: %(message)s'
     logging.basicConfig(level=logging.DEBUG, filename='myLog.log', filemode='w', format=FORMAT)
-    # g4 = HistoryData()
-    # g5 = {1: 'apple', 2: 'banana00'}
-    # g4.addUsersDemand(g5)
-    # print(g4.userDemand)
 
-    # --------------- #
-    #     Initial     #
-    # --------------- #
+    # ------------------------- #
+    #      Initialization       #
+    # ------------------------- #
+    totalRound = 500
     m, n, k = 2, 2, 2 # Cloud, Broker, User
     clouds, brokers, users = [], [], []
     for idx in range(m):
@@ -28,19 +25,26 @@ def main():
     for idx in range(k):
         users.append( User(idx, n) )
 
+    '''for aggressive broker'''
+    brokers[0].businessStrategyIndex = 2
+    brokers[0].alpha = 1.2
+
     # ------------------------- #
     #     B-round(n) starts     #
     # ------------------------- #
-    y = []
-    y2 = []
-    y3 = []
-    for b_round in range(500):
-        print("------------------- round: ", b_round, "------------------")
-        logging.info(f'-------------------round: {b_round}------------------')
+    '''for plotting'''
+    y, y2, y3 = [], [], []
+    z, z2, z3 = [], [], []
+    userDemand = []
+    
+    for curRound in range(totalRound):
+        print("------------------- round: ", curRound, "------------------")
+        logging.info(f'-------------------round: {curRound}------------------')
 
         # User generage demand(step 1 -> done)
         for user in users:
-            user.genDemand(n)
+            user.genDemand(n, curRound)
+        userDemand.append(users[0].demand)
 
         # Broker aggregate all users' demand(step 1 -> done)
         logging.info(f'Broker aggregate all users demand')
@@ -75,8 +79,6 @@ def main():
                 #################################################################
                 #                    profit-objective mode                      #
                 #################################################################
-                # avgDemand = math.ceil(broker.curUsersDemand / m)
-                # print("aveDemand: ", avgDemand)
                 listOfCloudPrice = broker.curCloudPrice
                 dictOfCloudPrice = {i : listOfCloudPrice[i] for i in range(0, len(listOfCloudPrice))}
                 sortedCloudPrice = {k: v for k, v in sorted(dictOfCloudPrice.items(), key = lambda item: item[1])} # dict
@@ -101,7 +103,7 @@ def main():
                     logging.info(f'maximum profit: {maxProfit}, optimal price: {optimalPrice}, actualPurchase: {actualPurchase}')
                     print("maxProfit:", maxProfit, "optimalPrice:", optimalPrice, "actualPurchase", actualPurchase, "from cloud", keyListOfSortedCloudPrice[curIdx])
                     demandSatisfaction = user.calDemandSatisfaction(0.5, broker.ID, actualPurchase)
-                    priceSatisfaction = user.calPriceSatisfaction(broker.ID, actualPurchase, optimalPrice, b_round + 2)
+                    priceSatisfaction = user.calPriceSatisfaction(broker.ID, actualPurchase, optimalPrice, curRound + 2)
                     print("user", user.ID, "satis to broker", broker.ID, demandSatisfaction, priceSatisfaction)
                     user.update_D(broker.ID)
                     user.update_D_success(actualPurchase, broker.ID)
@@ -118,19 +120,31 @@ def main():
             print(cloud.brokersCredit)
         
         y.append(clouds[0].brokersCredit[0])
+        z.append(clouds[0].brokersCredit[1])
         y2.append(demandSatisfaction)
         y3.append(priceSatisfaction)
     
+    ''' plotting '''
+    plt.figure()
     plt.subplot(3, 1, 1)
     plt.plot(y)
-    plt.title("brokers' credit scored by cloud")
+    plt.plot(z)
+    plt.title("brokers' credit over time")
+    plt.xlabel("Time (hour)")
+    plt.ylabel("brokers' credit")
+    plt.legend(['aggressive', 'not aggressive'])
+
     plt.subplot(3, 1, 2)
     plt.plot(y2)
-    plt.title("user demand satisfaction")
+    #plt.title("user demand satisfaction")
+    
     plt.subplot(3, 1, 3)
     plt.plot(y3)
-    plt.title("user price satisfaction")
-    # plt.legend(['User demand satisfaction', 'user price satisfaction'])
+    #plt.title("user price satisfaction")
+    
+    plt.figure()
+    plt.plot(userDemand)
+    plt.title("user demand")
     plt.show()
     
     logging.info('simulation done...')

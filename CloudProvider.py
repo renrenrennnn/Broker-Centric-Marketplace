@@ -53,7 +53,7 @@ class CloudProvider(object):
         self._availableInstanceNum = newAvailableInstanceNum
 
     def genSupply(self):
-        supply = numpy.random.default_rng().poisson(250)
+        supply = numpy.random.default_rng().poisson(500)
         # print("lambda(cloud genSupply): ", supply)
         return supply
 

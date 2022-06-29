@@ -147,7 +147,7 @@ def main():
                     if remainInstance == lastRemainInstance:
                         break
                     lastRemainInstance = remainInstance
-                
+                 
                 fairness = broker.calJainsFairness(sum(broker.D_cb), users, n, broker.ID)
                 print("fairness: ", fairness)
                 fairnessPlot[broker.ID].append(fairness)
@@ -166,6 +166,8 @@ def main():
         # y2.append(demandSatisfaction)
         # y3.append(priceSatisfaction)
     
+    
+
     ''' plotting '''
     plt.figure()
     plt.xlim([100, 400])
@@ -206,9 +208,11 @@ def main():
     # plt.plot(fairnessPlot[1])
     plt.title("Jain's fairness")
     plt.legend(['aggressive', 'not aggressive'])
+    logging.info(f'cloud 0 market fairness {nanmean(listPlot)}')
+    logging.info(f'cloud 1 market fairness {nanmean(listPlot2)}')
 
     plt.show()
-    
+
     logging.info('simulation done...')
 
 if __name__ == '__main__':

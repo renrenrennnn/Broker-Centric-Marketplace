@@ -65,11 +65,11 @@ class User(object):
     def priceSensitivity(self):
         return self._priceSensitivity
     
-    def genDemand(self, brokerSize, curRound):
+    def genDemand(self, brokerSize, curRound, arrivalRate):
         if curRound % 40 < 20:
-            self._demand = np.random.default_rng().poisson(80, brokerSize)
+            self._demand = np.random.default_rng().poisson(arrivalRate, brokerSize)
         else:
-            self._demand = np.random.default_rng().poisson(160, brokerSize)
+            self._demand = np.random.default_rng().poisson(arrivalRate * 2, brokerSize)
         print('user demand:', self._demand)
 
     def update_D(self, brokerId):

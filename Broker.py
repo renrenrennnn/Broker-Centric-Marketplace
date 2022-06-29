@@ -5,10 +5,12 @@ import numpy as np
 import statistics
 
 class Broker(object):
-    def __init__(self, ID, cloudSize, businessStrategyIndex):
+    def __init__(self, ID, cloudSize, brokerSize, userSize, businessStrategyIndex):
         self._ID = ID
         self._cloudSize = cloudSize
-        self._historyData = HistoryData(2, 2, 2, 2)
+        self._brokerSize = brokerSize
+        self._userSize = userSize
+        self._historyData = HistoryData(cloudSize, brokerSize, userSize, 2)
         self._curCloudPrice = [1] * cloudSize
         self._curCloudInstanceNum = 0
         self._curUsersDemand = 0

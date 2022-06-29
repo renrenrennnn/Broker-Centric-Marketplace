@@ -13,29 +13,30 @@ def main():
     FORMAT = '%(asctime)s %(levelname)s: %(message)s'
     logging.basicConfig(level=logging.DEBUG, filename='myLog.log', filemode='w', format=FORMAT)
 
-    # ------------------------- #
-    #      Initialization       #
-    # ------------------------- #
+    ''' Initial Data'''
+
     totalRound = 500
-    m, n, k = 2, 2, 2 # Cloud, Broker, User
+    m, n, k = 2, 4, 2 # Cloud, Broker, User
+    arrivalRate = 80
+    originalBusniessStrategyIndex = 1
     clouds, brokers, users = [], [], []
     for idx in range(m):
         clouds.append( CloudProvider(idx, n) )
     for idx in range(n):
-        brokers.append( Broker(idx, m, 1) )
+        brokers.append( Broker(idx, m, n, k, originalBusniessStrategyIndex) )
     for idx in range(k):
         users.append( User(idx, n) )
 
-    '''for aggressive broker'''
+    ''' for aggressive broker '''
     brokers[0].businessStrategyIndex = 2
     brokers[0].alpha = 1.2
 
     ##### B-round(n) starts #####
-    '''for plotting'''
+    ''' for plotting '''
     y, y2, y3 = [], [], []
     z, z2, z3 = [], [], []
     userDemand = []
-    fairnessPlot = [[], []]
+    fairnessPlot = [[] for i in range(n)]
     
     for curRound in range(totalRound):
         print("------------------- round: ", curRound, "------------------")
@@ -43,7 +44,7 @@ def main():
 
         # User generage demand(step 1 -> done)
         for user in users:
-            user.genDemand(n, curRound)
+            user.genDemand(n, curRound, arrivalRate)
         userDemand.append(users[0].demand)
 
         # Broker aggregate all users' demand(step 1 -> done)
@@ -162,8 +163,8 @@ def main():
 
         y.append(clouds[0].brokersCredit[0])
         z.append(clouds[0].brokersCredit[1])
-        y2.append(demandSatisfaction)
-        y3.append(priceSatisfaction)
+        # y2.append(demandSatisfaction)
+        # y3.append(priceSatisfaction)
     
     ''' plotting '''
     plt.figure()

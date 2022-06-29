@@ -29,6 +29,13 @@ class Broker(object):
         self._ID = newID
 
     @property
+    def cost(self):
+        return self._cost
+    @cost.setter
+    def cost(self, newCost):
+        self._cost = newCost
+    
+    @property
     def D_cb(self):
         return self._D_cb
     @D_cb.setter
@@ -93,3 +100,12 @@ class Broker(object):
     def updateHistoryData_othersInstanceNum(self, clouds, otherBroker):
         for cloud in clouds:
             self._historyData.othersInstanceNum[cloud.ID][otherBroker.ID] = self._historyData.othersInstanceNum[cloud.ID][otherBroker.ID] + sum(cloud.D_cb)
+
+    
+    def calJainsFairness(self, wholeInstance, users, brokerSize, brokerId):
+        x_i = []
+        for user in users:
+            x_i.append(user.D_success[brokerId] / wholeInstance)
+        fairness = (sum(x_i) ** 2) / (brokerSize * sum(x_i))
+
+        return fairness

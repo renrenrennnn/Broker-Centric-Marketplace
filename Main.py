@@ -109,6 +109,9 @@ def main():
                     print("user", user.ID, "satis to broker", broker.ID, demandSatisfaction, priceSatisfaction)
                     user.update_D(broker.ID)
                     user.update_D_success(actualPurchase, broker.ID)
+                    y2.append(demandSatisfaction)
+                    y3.append(priceSatisfaction)
+    
 
                 fairness = broker.calJainsFairness(sum(broker.D_cb), users, n, broker.ID)
                 print("fairness:", fairness)
@@ -179,19 +182,23 @@ def main():
     plt.ylabel("brokers' credit")
     plt.legend(['aggressive', 'not aggressive'])
 
-    # plt.subplot(3, 1, 2)
-    # plt.plot(y2)
-    #plt.title("user demand satisfaction")
-    
-    # plt.subplot(3, 1, 3)
-    # plt.plot(y3)
-    #plt.title("user price satisfaction")
+    ''' ----- satisfaction ----- '''
+    plt.figure()
+    plt.subplot(2, 1, 1)
+    plt.ylim([0,1])
+    plt.plot(y2)
+    plt.title("user demand satisfaction")    
+    plt.subplot(2, 1, 2)
+    plt.plot(y3)
+    plt.title("user price satisfaction")
 
+    ''' ----- user demand ----- '''
     plt.figure()
     plt.ylim([0,200])
     plt.plot(userDemand)
     plt.title("user demand")
 
+    ''' ----- fairness ----- '''
     plt.figure()
     # x = linspace(0, totalRound, n)
     plt.xlim([100, 400])

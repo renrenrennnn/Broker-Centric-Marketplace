@@ -184,9 +184,12 @@ def main():
 
     ''' ----- satisfaction ----- '''
     plt.figure()
+    demandSatis = y2
+    for i, x in enumerate(y2):
+        demandSatis[i] = (x - min(y2)) / (max(y2) - min(y2))
     plt.subplot(2, 1, 1)
     plt.ylim([0,1])
-    plt.plot(y2)
+    plt.plot(demandSatis, marker='.')
     plt.title("user demand satisfaction")    
     plt.subplot(2, 1, 2)
     plt.plot(y3)

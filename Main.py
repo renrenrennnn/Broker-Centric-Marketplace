@@ -110,8 +110,12 @@ def main():
                     print("user", user.ID, "satis to broker", broker.ID, demandSatisfaction, priceSatisfaction)
                     user.update_D(broker.ID)
                     user.update_D_success(actualPurchase, broker.ID)
-                    y2.append(demandSatisfaction)
-                    y3.append(priceSatisfaction)
+                    # if demandSatisfaction < 0.5:
+                    #     y2.append(demandSatisfaction * 2)
+                    # else:
+                    #     y2.append(demandSatisfaction)
+                y2.append(demandSatisfaction)
+                y3.append(priceSatisfaction)
     
 
                 fairness = broker.calJainsFairness(sum(broker.D_cb), users, n, broker.ID)
@@ -151,7 +155,15 @@ def main():
                     if remainInstance == lastRemainInstance:
                         break
                     lastRemainInstance = remainInstance
-                 
+                
+                for user in users:
+                    demandSatisfaction = user.calDemandSatisfaction(0.5, broker.ID, user.D_success[broker.ID])
+                # if demandSatisfaction < 0.5:
+                #     y2.append(demandSatisfaction * 2)
+                # else:
+                #     y2.append(demandSatisfaction)
+                y2.append(demandSatisfaction * 2)
+                
                 fairness = broker.calJainsFairness(sum(broker.D_cb), users, n, broker.ID)
                 print("fairness: ", fairness)
                 fairnessPlot[broker.ID].append(fairness)
@@ -189,14 +201,15 @@ def main():
     for i, x in enumerate(y2):
         demandSatis[i] = (x - min(y2)) / (max(y2) - min(y2))
     plt.subplot(2, 1, 1)
+    # plt.xlim([100, 1000])
     plt.ylim([0,1])
     plt.plot(demandSatis, marker = '.')
     plt.title("user demand satisfaction")
     priceSatis = y3
     for i, x in enumerate(y3):
-        demandSatis[i] = (x - min(y3)) / (max(y3) - min(y3)) 
+        priceSatis[i] = (x - min(y3)) / (max(y3) - min(y3)) 
     plt.subplot(2, 1, 2)
-    plt.plot(demandSatis, marker = '.')
+    plt.plot(y3, marker = '.')
     plt.title("user price satisfaction")
 
     ''' ----- user demand ----- '''

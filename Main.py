@@ -105,7 +105,8 @@ def main():
                     logging.info(f'maximum profit: {maxProfit}, optimal price: {optimalPrice}, actualPurchase: {actualPurchase}')
                     print("maxProfit:", maxProfit, "optimalPrice:", optimalPrice, "actualPurchase", actualPurchase, "from cloud", keyListOfSortedCloudPrice[curIdx])
                     demandSatisfaction = user.calDemandSatisfaction(0.5, broker.ID, actualPurchase)
-                    priceSatisfaction = user.calPriceSatisfaction(broker.ID, actualPurchase, optimalPrice, curRound + 2)
+                    # priceSatisfaction = user.calPriceSatisfaction(broker.ID, actualPurchase, optimalPrice, curRound + 2)
+                    priceSatisfaction = user.calPriceSatisfaction(broker.ID, actualPurchase, optimalPrice, broker.curCloudPrice[0], curRound + 2)
                     print("user", user.ID, "satis to broker", broker.ID, demandSatisfaction, priceSatisfaction)
                     user.update_D(broker.ID)
                     user.update_D_success(actualPurchase, broker.ID)
@@ -189,10 +190,13 @@ def main():
         demandSatis[i] = (x - min(y2)) / (max(y2) - min(y2))
     plt.subplot(2, 1, 1)
     plt.ylim([0,1])
-    plt.plot(demandSatis, marker='.')
-    plt.title("user demand satisfaction")    
+    plt.plot(demandSatis, marker = '.')
+    plt.title("user demand satisfaction")
+    priceSatis = y3
+    for i, x in enumerate(y3):
+        demandSatis[i] = (x - min(y3)) / (max(y3) - min(y3)) 
     plt.subplot(2, 1, 2)
-    plt.plot(y3)
+    plt.plot(demandSatis, marker = '.')
     plt.title("user price satisfaction")
 
     ''' ----- user demand ----- '''

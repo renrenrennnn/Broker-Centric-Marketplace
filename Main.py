@@ -106,7 +106,7 @@ def main():
                     print("maxProfit:", maxProfit, "optimalPrice:", optimalPrice, "actualPurchase", actualPurchase, "from cloud", keyListOfSortedCloudPrice[curIdx])
                     demandSatisfaction = user.calDemandSatisfaction(0.5, broker.ID, actualPurchase)
                     # priceSatisfaction = user.calPriceSatisfaction(broker.ID, actualPurchase, optimalPrice, curRound + 2)
-                    priceSatisfaction = user.calPriceSatisfaction(broker.ID, actualPurchase, optimalPrice, broker.curCloudPrice[0], curRound + 2)
+                    priceSatisfaction = user.calPriceSatisfaction(broker.ID, optimalPrice, broker.curCloudPrice[0], curRound + 2)
                     print("user", user.ID, "satis to broker", broker.ID, demandSatisfaction, priceSatisfaction)
                     user.update_D(broker.ID)
                     user.update_D_success(actualPurchase, broker.ID)
@@ -116,8 +116,8 @@ def main():
                     #     y2.append(demandSatisfaction)
                 y2.append(demandSatisfaction)
                 y3.append(priceSatisfaction)
+                user.retailPrice[broker.ID] = optimalPrice
     
-
                 fairness = broker.calJainsFairness(sum(broker.D_cb), users, n, broker.ID)
                 print("fairness:", fairness)
                 fairnessPlot[broker.ID].append(fairness)
@@ -158,12 +158,11 @@ def main():
                 
                 for user in users:
                     demandSatisfaction = user.calDemandSatisfaction(0.5, broker.ID, user.D_success[broker.ID])
-                # if demandSatisfaction < 0.5:
-                #     y2.append(demandSatisfaction * 2)
-                # else:
-                #     y2.append(demandSatisfaction)
+                    priceSatisfaction = user.calPriceSatisfaction(broker.ID, user.retailPrice[broker.ID], broker.curCloudPrice[0], curRound + 2)
                 y2.append(demandSatisfaction * 2)
-                
+                y3.append(priceSatisfaction * 2)
+                user.retailPrice[broker.ID] = broker.curCloudPrice[0] / 0.7
+
                 fairness = broker.calJainsFairness(sum(broker.D_cb), users, n, broker.ID)
                 print("fairness: ", fairness)
                 fairnessPlot[broker.ID].append(fairness)
@@ -185,6 +184,7 @@ def main():
     
 
     ''' plotting '''
+    ''' for credit '''
     plt.figure()
     plt.xlim([100, 400])
     # plt.subplot(3, 1, 1)
@@ -200,21 +200,33 @@ def main():
     demandSatis = y2
     for i, x in enumerate(y2):
         demandSatis[i] = (x - min(y2)) / (max(y2) - min(y2))
-    plt.subplot(2, 1, 1)
-    # plt.xlim([100, 1000])
+    plt.subplot(3, 1, 1)
+    plt.xlim([100, 400])
     plt.ylim([0,1])
-    plt.plot(demandSatis, marker = '.')
+    plt.plot(y2, marker = '.')
     plt.title("user demand satisfaction")
-    priceSatis = y3
-    for i, x in enumerate(y3):
-        priceSatis[i] = (x - min(y3)) / (max(y3) - min(y3)) 
-    plt.subplot(2, 1, 2)
+    # priceSatis = y3
+    # for i, x in enumerate(y3):
+    #     priceSatis[i] = (x - min(y3)) / (max(y3) - min(y3)) 
+    plt.subplot(3, 1, 2)
+    plt.xlim([100, 400])
     plt.plot(y3, marker = '.')
     plt.title("user price satisfaction")
 
+    satis = []
+    for i in range(len(y3)):
+            satis.append(y2[i] * y3[i])
+    print(y2)
+    print(y3)
+    print(satis)
+    plt.subplot(3, 1, 3)
+    plt.xlim([100, 400])
+    plt.plot(satis, marker = '.')
+    plt.title("user satisfaction")
+
     ''' ----- user demand ----- '''
     plt.figure()
-    plt.ylim([0,200])
+    plt.xlim([100,400])
     plt.plot(userDemand)
     plt.title("user demand")
 

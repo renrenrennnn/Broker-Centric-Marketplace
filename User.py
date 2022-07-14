@@ -88,6 +88,7 @@ class User(object):
     #     meanRetailPrice = self._retailPrice[brokerId] / (t - 1)
     #     return (autualPurchase / mean_D) * (optimalPrice / meanRetailPrice)
 
-    def calPriceSatisfaction(self, brokerId, autualPurchase, predefinedPrice, optimalPrice, t):
+    def calPriceSatisfaction(self, brokerId, predefinedPrice, optimalPrice, t):
         S_PoS = math.exp((predefinedPrice - optimalPrice) / predefinedPrice)
+        # S_PoS = math.exp((optimalPrice - predefinedPrice) / optimalPrice)
         return S_PoS

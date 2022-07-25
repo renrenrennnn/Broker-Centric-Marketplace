@@ -7,7 +7,7 @@ class HistoryData():
         self._t = t
         self._usersDemand = []
         self._usersActualTake = []
-        self._retailPriceToUser = []
+        self._retailPriceToUser = [10]
         self._wholesalePriceFromCloud = []
         self._othersInstanceNum = [[1 for col in range(self._brokerSize)] for row in range(self._cloudSize)]
         self._B_in = [1]

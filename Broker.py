@@ -30,6 +30,14 @@ class Broker(object):
     def ID(self, newID):
         self._ID = newID
 
+    
+    # @property
+    # def historyData(self):
+    #     return self._historyData
+    # @historyData.setter
+    # def ID(self, newhistoryData):
+    #     self._historyData = newhistoryData
+
     @property
     def cost(self):
         return self._cost

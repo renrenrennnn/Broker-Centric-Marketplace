@@ -81,7 +81,7 @@ class User(object):
     def calDemandSatisfaction(self, weight, brokerId, actualPurchase):
         historyRes = self._D_success[brokerId] / self._D[brokerId]
         curRes = actualPurchase / self._demand[brokerId]
-        return historyRes * weight + curRes * (1 - weight)
+        return historyRes * weight + (1/curRes) * (1 - weight)
 
     # def calPriceSatisfaction(self, brokerId, autualPurchase, optimalPrice, t):
     #     mean_D = (self._D[brokerId] + self._demand[brokerId]) / t
@@ -91,4 +91,4 @@ class User(object):
     def calPriceSatisfaction(self, brokerId, predefinedPrice, optimalPrice, t):
         S_PoS = math.exp((predefinedPrice - optimalPrice) / predefinedPrice)
         # S_PoS = math.exp((optimalPrice - predefinedPrice) / optimalPrice)
-        return S_PoS
+        return 1/S_PoS

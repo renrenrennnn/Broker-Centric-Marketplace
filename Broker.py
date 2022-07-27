@@ -70,6 +70,9 @@ class Broker(object):
     @property
     def curCloudPrice(self):
         return self._curCloudPrice
+    @curCloudPrice.setter
+    def curCloudPrice(self, newPrice):
+        self._curCloudPrice = newPrice
 
     def aggregateDemand(self, users):
         # np.random.seed(0)

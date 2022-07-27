@@ -18,7 +18,7 @@ def main():
 
     ''' Initial Data'''
 
-    totalRound = 500
+    totalRound = 200
     m, n, k = 2, 4, 2  # Cloud, Broker, User
     arrivalRate = 50
     originalBusniessStrategyIndex = 1
@@ -85,7 +85,7 @@ def main():
                 logging.info('profit-objective mode')
 
                 '''profit-objective mode'''
-
+                revenue = 0
                 listOfCloudPrice = broker.curCloudPrice
                 dictOfCloudPrice = {
                     i: listOfCloudPrice[i] for i in range(0, len(listOfCloudPrice))}
@@ -111,6 +111,7 @@ def main():
                                                                                   broker.curCloudPrice[
                         keyListOfSortedCloudPrice[curIdx]]
                     )
+                    revenue += actualPurchase * optimalPrice
                     dictOf_D_cb[keyListOfSortedCloudPrice[curIdx]
                                 ] = dictOf_D_cb[keyListOfSortedCloudPrice[curIdx]] - actualPurchase
                     logging.info(
@@ -127,14 +128,10 @@ def main():
                           demandSatisfaction, priceSatisfaction)
                     user.update_D(broker.ID)
                     user.update_D_success(actualPurchase, broker.ID)
-                    # if demandSatisfaction < 0.5:
-                    #     y2.append(demandSatisfaction * 2)
-                    # else:
-                    #     y2.append(demandSatisfaction)
+                
                 logging.info(
                     f'broker: {broker.ID} demand satisfaction: {demandSatisfaction}')
-                # y2[broker.ID].append(demandSatisfaction)
-                # y3.append(priceSatisfaction * 0.5)
+                print("broker", broker.ID, "revenue = ", revenue)
                 user.retailPrice[broker.ID] = optimalPrice
 
                 fairness = broker.calJainsFairness(
@@ -147,6 +144,8 @@ def main():
                 logging.info('fairness-objective mode')
 
                 ''' fairness-objective mode'''
+                maxProfit = sum(broker.D_cb) * mean(broker.curCloudPrice)
+                print("maxProfit:", maxProfit)
                 # brokers give a basic amount of instances to all users
                 remainInstance = sum(broker.D_cb) - 10 * k
                 userDemandList = []
